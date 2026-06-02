@@ -108,9 +108,9 @@ def submit(request, course_id):
     submitted_answers = []
     for key in request.POST:
         if key.startswith('choice'):
-            value = request.POST[key]
-            choice_id = int(value)
-            submitted_answers.append(choice_id)
+            values = request.POST.getlist(key)
+            for value in values:
+                submitted_answers.append(int(value))
     selected_choices = Choice.objects.filter(id__in=submitted_answers)
     submission.choices.set(selected_choices)
     submission.save()
