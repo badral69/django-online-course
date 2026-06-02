@@ -48,20 +48,18 @@
 
             <div class="mt-4">
                 <h4>Exam Results</h4>
-                {% for question in course.question_set.all %}
+                {% for result in question_results %}
                 <div class="card mb-3">
                     <div class="card-header">
-                        <strong>{{ question.content }}</strong>
-                        {% with selected_ids=choices|dictsort:"question_id" %}
-                        {% if question.is_get_score selected_ids %}
-                        <span class="badge badge-success float-right">Correct (+{{ question.grade }})</span>
+                        <strong>{{ result.question.content }}</strong>
+                        {% if result.correct %}
+                        <span class="badge badge-success float-right">Correct (+{{ result.question.grade }})</span>
                         {% else %}
                         <span class="badge badge-danger float-right">Incorrect</span>
                         {% endif %}
-                        {% endwith %}
                     </div>
                     <div class="card-body">
-                        {% for choice in question.choice_set.all %}
+                        {% for choice in result.question.choice_set.all %}
                         <div class="form-check">
                             {% if choice in choices %}
                             <input class="form-check-input" type="checkbox" checked disabled>
@@ -69,8 +67,8 @@
                             <input class="form-check-input" type="checkbox" disabled>
                             {% endif %}
                             <label class="form-check-label
-                                {% if choice.is_correct %}text-success font-weight-bold{% endif %}
-                                {% if choice in choices and not choice.is_correct %}text-danger{% endif %}">
+                                {% if choice.is_correct %} text-success font-weight-bold{% endif %}
+                                {% if choice in choices and not choice.is_correct %} text-danger{% endif %}">
                                 {{ choice.content }}
                                 {% if choice.is_correct %} ✓{% endif %}
                             </label>

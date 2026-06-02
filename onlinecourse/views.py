@@ -127,15 +127,18 @@ def show_exam_result(request, course_id, submission_id):
     submission = get_object_or_404(Submission, pk=submission_id)
     choices = submission.choices.all()
     total_score = 0
-    questions = course.question_set.all()
-    for question in questions:
+    question_results = []
+    for question in course.question_set.all():
         selected_ids = choices.filter(question=question).values_list('id', flat=True)
-        if question.is_get_score(selected_ids):
+        correct = question.is_get_score(selected_ids)
+        if correct:
             total_score += question.grade
+        question_results.append({'question': question, 'correct': correct})
     context = {
         'course': course,
         'submission': submission,
         'choices': choices,
         'total_score': total_score,
+        'question_results': question_results,
     }
     return render(request, 'onlinecourse/exam_result_bootstrap.html', context)
