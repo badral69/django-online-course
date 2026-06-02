@@ -1,0 +1,99 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ course.name }}</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <a class="navbar-brand" href="{% url 'onlinecourse:index' %}">Online Course</a>
+    <div class="collapse navbar-collapse">
+        <ul class="navbar-nav ml-auto">
+            {% if user.is_authenticated %}
+            <li class="nav-item">
+                <span class="nav-link text-light">Welcome, {{ user.first_name }}</span>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'onlinecourse:logout' %}">Logout</a>
+            </li>
+            {% else %}
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'onlinecourse:login' %}">Login</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'onlinecourse:registration' %}">Register</a>
+            </li>
+            {% endif %}
+        </ul>
+    </div>
+</nav>
+
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-8">
+            <h2>{{ course.name }}</h2>
+            <p class="text-muted">{{ course.description }}</p>
+            {% if course.image %}
+            <img src="{{ course.image.url }}" class="img-fluid mb-3" alt="{{ course.name }}">
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="row mt-3">
+        <div class="col-md-12">
+            <h4>Lessons</h4>
+            <div class="list-group">
+                {% for lesson in course.lesson_set.all %}
+                <div class="list-group-item">
+                    <h5 class="mb-1">{{ lesson.title }}</h5>
+                    <p class="mb-1">{{ lesson.content }}</p>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    {% if user.is_authenticated %}
+    <div class="row mt-4">
+        <div class="col-md-12">
+            <h4>Exam</h4>
+            <form method="post" action="{% url 'onlinecourse:submit' course.id %}">
+                {% csrf_token %}
+                {% for question in course.question_set.all %}
+                <div class="card mb-3">
+                    <div class="card-header">
+                        <strong>Question {{ forloop.counter }}: {{ question.content }}</strong>
+                        <span class="badge badge-info float-right">{{ question.grade }} points</span>
+                    </div>
+                    <div class="card-body">
+                        {% for choice in question.choice_set.all %}
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox"
+                                   name="choice{{ question.id }}"
+                                   value="{{ choice.id }}"
+                                   id="choice{{ choice.id }}">
+                            <label class="form-check-label" for="choice{{ choice.id }}">
+                                {{ choice.content }}
+                            </label>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endfor %}
+                <button type="submit" class="btn btn-primary">Submit Exam</button>
+            </form>
+        </div>
+    </div>
+    {% else %}
+    <div class="alert alert-warning mt-4">
+        Please <a href="{% url 'onlinecourse:login' %}">login</a> to take the exam.
+    </div>
+    {% endif %}
+</div>
+
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>

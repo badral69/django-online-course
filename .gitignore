@@ -1,1 +1,7 @@
-node_modules/
+db.sqlite3
+*.pyc
+__pycache__/
+.DS_Store
+media/
+*.log
+.env

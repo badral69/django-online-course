@@ -1,0 +1,20 @@
+from django.urls import path
+from django.conf import settings
+from django.conf.urls.static import static
+from . import views
+
+app_name = 'onlinecourse'
+urlpatterns = [
+    path(route='', view=views.CourseListView.as_view(), name='index'),
+    path(route='<int:pk>/', view=views.CourseDetailView.as_view(), name='course_details'),
+    path(route='<int:course_id>/enroll/', view=views.enroll, name='enroll'),
+    path(route='<int:course_id>/submit/', view=views.submit, name='submit'),
+    path(
+        route='<int:course_id>/submission/<int:submission_id>/result/',
+        view=views.show_exam_result,
+        name='show_exam_result',
+    ),
+    path(route='registration/', view=views.registration_request, name='registration'),
+    path(route='login/', view=views.login_request, name='login'),
+    path(route='logout/', view=views.logout_request, name='logout'),
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
